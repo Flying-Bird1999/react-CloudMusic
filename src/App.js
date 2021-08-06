@@ -9,6 +9,8 @@ import { HashRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import store from './store/index'
 
+import { Data } from './application/Singers/data'
+
 function App () {
     return (
         <Provider store={store}>
@@ -16,7 +18,9 @@ function App () {
                 <div className="App">
                     <GlobalStyle></GlobalStyle>
                     <IconStyle></IconStyle>
-                    { renderRoutes(routes) }
+                    <Data>
+                        { renderRoutes(routes) }
+                    </Data>
                 </div>
             </HashRouter>
         </Provider>
