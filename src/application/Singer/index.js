@@ -9,6 +9,7 @@ import SongsList from "../SongsList";
 import { connect } from 'react-redux';
 import { getSingerInfo, changeEnterLoading } from "./store/actionCreators";
 import Loading from "./../../baseUI/loading/index";
+import MusicNote from "../../baseUI/music-note/index";
 
 function Singer (props) {
     const [showStatus, setShowStatus] = useState (true);
@@ -23,7 +24,6 @@ function Singer (props) {
 
     const artist = immutableArtist.toJS ();
     const songs = immutableSongs.toJS ();
-
     const collectButton = useRef ();
     const imageWrapper = useRef ();
     const songScrollWrapper = useRef ();
@@ -35,6 +35,13 @@ function Singer (props) {
 
     // 往上偏移的尺寸，露出圆角
     const OFFSET = 5;
+
+    const musicNoteRef = useRef ();
+
+    const musicAnimation = (x, y) => {
+        musicNoteRef.current.startAnimation ({ x, y });
+    };
+
 
     useEffect (() => {
         const id = props.match.params.id;
@@ -120,10 +127,12 @@ function Singer (props) {
                         <SongsList
                             songs={songs}
                             showCollect={false}
+                            musicAnimation={musicAnimation}
                         ></SongsList>
                     </Scroll>
                 </SongListWrapper>
                 { loading ? (<Loading></Loading>) : null}
+                <MusicNote ref={musicNoteRef}></MusicNote>
             </Container>
         </CSSTransition>
     )

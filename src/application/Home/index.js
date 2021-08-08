@@ -2,6 +2,7 @@ import React from 'react'
 import { renderRoutes } from 'react-router-config'
 import { Top, Tab, TabItem } from './style'
 import { NavLink } from 'react-router-dom';// 利用 NavLink 组件进行路由跳转
+import Player from '../Player';
 
 function Home(props) {
     const { route } = props
@@ -23,6 +24,7 @@ function Home(props) {
             </Tab>
             {/*{renderRoutes(props.route.routes)}*/}
             { renderRoutes(route.routes) }
+            <Player></Player>
         </div>
     )
 }
