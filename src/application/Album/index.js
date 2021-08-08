@@ -8,7 +8,8 @@ import { HEADER_HEIGHT } from './../../api/config';
 import style from "../../assets/global-style"
 import { connect } from 'react-redux'
 import { getAlbumList, changeEnterLoading } from './store/actionCreators';
-import Loading from '../../baseUI/loading/index';
+import Loading from '../../baseUI/loading/index'
+import SongsList from '../SongsList';
 
 function Album (props) {
     const [showStatus, setShowStatus] = useState (true);
@@ -99,39 +100,40 @@ function Album (props) {
             </Menu>
         )
     };
-    const renderSongList = () => {
-        return (
-            <SongList>
-                <div className="first_line">
-                    <div className="play_all">
-                        <i className="iconfont">&#xe6e3;</i>
-                        <span > 播放全部 <span className="sum">(共 {currentAlbum.tracks.length} 首)</span></span>
-                    </div>
-                    <div className="add_list">
-                        <i className="iconfont">&#xe62d;</i>
-                        <span > 收藏 ({getCount (currentAlbum.subscribedCount)})</span>
-                    </div>
-                </div>
-                <SongItem>
-                    {
-                        currentAlbum.tracks.map ((item, index) => {
-                            return (
-                                <li key={index}>
-                                    <span className="index">{index + 1}</span>
-                                    <div className="info">
-                                        <span>{item.name}</span>
-                                        <span>
-                    {getName (item.ar)} - {item.al.name}
-                  </span>
-                                    </div>
-                                </li>
-                            )
-                        })
-                    }
-                </SongItem>
-            </SongList>
-        )
-    }
+
+    // const renderSongList = () => {
+    //     return (
+    //         <SongList>
+    //             <div className="first_line">
+    //                 <div className="play_all">
+                        {/*<i className="iconfont">&#xe6e3;</i>*/}
+    //                     <span > 播放全部 <span className="sum">(共 {currentAlbum.tracks.length} 首)</span></span>
+    //                 </div>
+    //                 <div className="add_list">
+    //                     <i className="iconfont">&#xe62d;</i>
+    //                     <span > 收藏 ({getCount (currentAlbum.subscribedCount)})</span>
+    //                 </div>
+                {/*</div>*/}
+    //             <SongItem>
+    //                 {
+    //                     currentAlbum.tracks.map ((item, index) => {
+    //                         return (
+    //                             <li key={index}>
+    //                                 <span className="index">{index + 1}</span>
+    //                                 <div className="info">
+                                        {/*<span>{item.name}</span>*/}
+                                        {/*<span>*/}
+                                            {/*{getName (item.ar)} - {item.al.name}*/}
+                                        {/*</span>*/}
+                                    {/*</div>*/}
+    //                             </li>
+    //                         )
+    //                     })
+    //                 }
+    //             </SongItem>
+    //         </SongList>
+    //     )
+    // }
 
     return (
         <CSSTransition
@@ -150,7 +152,13 @@ function Album (props) {
                             <div>
                                 { renderTopDesc() }
                                 { renderMenu() }
-                                { renderSongList() }
+                                {/*{ renderSongList() }*/}
+                                <SongsList
+                                    songs={currentAlbum.tracks}
+                                    collectCount={currentAlbum.subscribedCount}
+                                    showCollect={true}
+                                    showBackground={false}
+                                ></SongsList>
                             </div>
                         </Scroll>
                     ) : null
