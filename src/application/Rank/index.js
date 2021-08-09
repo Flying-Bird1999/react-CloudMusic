@@ -15,7 +15,7 @@ import { renderRoutes } from 'react-router-config';
 
 function Rank(props) {
     const { rankList:list, loading } = props;
-
+    const { songsCount } = props;
     const { getRankListDataDispatch } = props;
 
     let rankList = list ? list.toJS() : [];
@@ -68,7 +68,7 @@ function Rank(props) {
 
     let displayStyle = loading ? {"display":"none"}:  {"display": ""};
     return (
-        <Container>
+        <Container play={songsCount}>
             <Scroll>
                 <div>
                     <h1 className="offical" style={displayStyle}>官方榜</h1>
@@ -87,6 +87,7 @@ function Rank(props) {
 const mapStateToProps = (state) => ({
     rankList: state.getIn(['rank', 'rankList']),
     loading: state.getIn(['rank', 'loading']),
+    songsCount: state.getIn (['player', 'playList']).size,// 尽量减少 toJS 操作，直接取 size 属性就代表了 list 的长度
 });
 // 映射dispatch到props上
 const mapDispatchToProps = (dispatch) => {

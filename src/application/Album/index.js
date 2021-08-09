@@ -24,6 +24,7 @@ function Album (props) {
 
     const { currentAlbum:currentAlbumImmutable, enterLoading } = props;
     const { getAlbumDataDispatch } = props;
+    const { songsCount } = props;
 
     useEffect (() => {
         getAlbumDataDispatch (id);
@@ -117,7 +118,7 @@ function Album (props) {
             unmountOnExit
             onExited={props.history.goBack}
         >
-            <Container>
+            <Container play={songsCount}>
                 <Header ref={headerEl} title={title} handleClick={handleBack} isMarquee={isMarquee}></Header>
                 {
                     !isEmptyObject(currentAlbum)?(
@@ -148,6 +149,7 @@ function Album (props) {
 const mapStateToProps = (state) => ({
     currentAlbum: state.getIn (['album', 'currentAlbum']),
     enterLoading: state.getIn (['album', 'enterLoading']),
+    songsCount: state.getIn (['player', 'playList']).size,// 尽量减少 toJS 操作，直接取 size 属性就代表了 list 的长度
 });
 // 映射 dispatch 到 props 上
 const mapDispatchToProps = (dispatch) => {

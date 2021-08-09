@@ -23,6 +23,7 @@ import { renderRoutes } from 'react-router-config'
 function Singers(props) {
     const { singerList, enterLoading, pullUpLoading, pullDownLoading, pageCount } = props
     const { getHotSingerDispatch, updateDispatch, pullUpRefreshDispatch, pullDownRefreshDispatch } = props
+    const { songsCount } = props;
 
     const {data, dispatch} = useContext(CategoryDataContext)
     const {category, alpha} = data.toJS ();
@@ -89,7 +90,7 @@ function Singers(props) {
                         title={"首字母:"}
                         handleClick={val => handleUpdateAlpha(val)}
                         oldVal={alpha}/>
-                    <ListContainer>
+                    <ListContainer play={songsCount}>
                         <Scroll
                             pullUp={ handlePullUp }
                             pullDown = { handlePullDown }
@@ -113,7 +114,8 @@ const mapStateToProps = (state) => ({
     enterLoading: state.getIn(['singers', 'enterLoading']),
     pullUpLoading: state.getIn(['singers', 'pullUpLoading']),
     pullDownLoading: state.getIn(['singers', 'pullDownLoading']),
-    pageCount: state.getIn(['singers', 'pageCount'])
+    pageCount: state.getIn(['singers', 'pageCount']),
+    songsCount: state.getIn (['player', 'playList']).size,// 尽量减少 toJS 操作，直接取 size 属性就代表了 list 的长度
 })
 
 const mapDispatchToProps = (dispatch) => {

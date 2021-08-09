@@ -11,6 +11,7 @@ import {
 } from "./store/actionCreators";
 import MiniPlayer from './miniPlayer/index'
 import NormalPlayer from './normalPlayer/index'
+import PlayList from './playList/index'
 import { getSongUrl, isEmptyObject, shuffle, findIndex } from "../../api/utils";
 import Toast from "./../../baseUI/toast/index";
 import { playMode } from '../../api/config';
@@ -20,6 +21,7 @@ function Player (props) {
     const [preSong, setPreSong] = useState({});
     const [modeText, setModeText] = useState("");
     const toastRef = useRef();
+    const songReady = useRef (true);
 
     const {
         playing,
@@ -37,107 +39,34 @@ function Player (props) {
         changeCurrentDispatch,
         changePlayListDispatch,//改变playList
         changeModeDispatch,//改变mode
-        toggleFullScreenDispatch
+        toggleFullScreenDispatch,
+        togglePlayListDispatch
     } = props;
 
     const playList = immutablePlayList.toJS();
     const sequencePlayList = immutableSequencePlayList.toJS();
     const currentSong = immutableCurrentSong.toJS();
 
-
-    // //先mock一份currentIndex
-    // useEffect(() => {
-    //     changeCurrentIndexDispatch(0);
-    // }, [])
-    // const playList = [
-    //     {
-    //         ftype: 0,
-    //         djId: 0,
-    //         a: null,
-    //         cd: '01',
-    //         crbt: null,
-    //         no: 1,
-    //         st: 0,
-    //         rt: '',
-    //         cf: '',
-    //         alia: [
-    //             '手游《梦幻花园》苏州园林版推广曲'
-    //         ],
-    //         rtUrls: [],
-    //         fee: 0,
-    //         s_id: 0,
-    //         copyright: 0,
-    //         h: {
-    //             br: 320000,
-    //             fid: 0,
-    //             size: 9400365,
-    //             vd: -45814
-    //         },
-    //         mv: 0,
-    //         al: {
-    //             id: 84991301,
-    //             name: '拾梦纪',
-    //             picUrl: 'http://p1.music.126.net/M19SOoRMkcHmJvmGflXjXQ==/109951164627180052.jpg',
-    //             tns: [],
-    //             pic_str: '109951164627180052',
-    //             pic: 109951164627180050
-    //         },
-    //         name: '拾梦纪',
-    //         l: {
-    //             br: 128000,
-    //             fid: 0,
-    //             size: 3760173,
-    //             vd: -41672
-    //         },
-    //         rtype: 0,
-    //         m: {
-    //             br: 192000,
-    //             fid: 0,
-    //             size: 5640237,
-    //             vd: -43277
-    //         },
-    //         cp: 1416668,
-    //         mark: 0,
-    //         rtUrl: null,
-    //         mst: 9,
-    //         dt: 234947,
-    //         ar: [
-    //             {
-    //                 id: 12084589,
-    //                 name: '妖扬',
-    //                 tns: [],
-    //                 alias: []
-    //             },
-    //             {
-    //                 id: 12578371,
-    //                 name: '金天',
-    //                 tns: [],
-    //                 alias: []
-    //             }
-    //         ],
-    //         pop: 5,
-    //         pst: 0,
-    //         t: 0,
-    //         v: 3,
-    //         id: 1416767593,
-    //         publishTime: 0,
-    //         rurl: null
-    //     }
-    // ];
     useEffect(() => {
         if (
             !playList.length ||
             currentIndex === -1 ||
             !playList[currentIndex] ||
-            playList[currentIndex].id === preSong.id
+            playList[currentIndex].id === preSong.id ||
+            !songReady.current// 标志位为 false
         )
             return;
         let current = playList[currentIndex];
         changeCurrentDispatch(current);//赋值currentSong
         setPreSong(current);
+        songReady.current = false; // 把标志位置为 false, 表示现在新的资源没有缓冲完成，不能切歌
+        changeCurrentDispatch (current);// 赋值 currentSong
         audioRef.current.src = getSongUrl(current.id);
         setTimeout(() => {
-            audioRef.current.play();
+            // 注意，play 方法返回的是一个 promise 对象
+            audioRef.current.play ().then (() => {
+                songReady.current = true;
+            });
         });
         togglePlayingDispatch(true);//播放状态
         setCurrentTime(0);//从头开始播放
@@ -232,6 +161,11 @@ function Player (props) {
         }
     };
 
+    const handleError = () => {
+        songReady.current = true;
+        alert ("播放出错");
+    };
+
 
     return (
         <div>
@@ -243,6 +177,7 @@ function Player (props) {
                     toggleFullScreen={toggleFullScreenDispatch}
                     clickPlaying={clickPlaying}
                     percent={percent}
+                    togglePlayList={togglePlayListDispatch}
                 />
             }
             { isEmptyObject(currentSong) ? null :
@@ -260,9 +195,14 @@ function Player (props) {
                     handleNext={handleNext}
                     mode={mode}
                     changeMode={changeMode}
+                    togglePlayList={togglePlayListDispatch}
                 />
             }
-            <audio ref={audioRef} onTimeUpdate={updateTime} onEnded={handleEnd}></audio>
+            <audio ref={audioRef}
+                   onTimeUpdate={updateTime}
+                   onEnded={handleEnd}
+                   onError={handleError}></audio>
+            <PlayList></PlayList>
             <Toast text={modeText} ref={toastRef}></Toast>
         </div>
     )
