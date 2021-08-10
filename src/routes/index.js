@@ -6,6 +6,7 @@ import Singers from '../application/Singers/index'
 import Rank from '../application/Rank/index'
 import Album from '../application/Album/index'
 import Singer from '../application/Singer';
+import Search from '../application/Search'
 
 export default [
     {
@@ -47,6 +48,18 @@ export default [
                     }
                 ]
             },
+            {
+                path: "/album/:id",
+                exact: true,
+                key: "album",
+                component: Album
+            },
+            {
+                path: '/search',
+                exact: true,
+                key: 'search',
+                component: Search
+            }
         ]
     }
 ]
